@@ -183,3 +183,42 @@ def train_svm(train_features, train_labels, arguments='-s 0 -t 0 -b 1'):
     svm =  svm_train(train_labels, train_features, arguments)
     print "SVM is trained"
     return svm
+
+def sw_search(test_indexes, BG_img, params, svm):
+    folder = params["folder"]
+    marginX = params["marginX"]
+    marginY = params["marginY"]
+    neg_weight = params["neg_weight"]
+    method = params["method"]
+
+    svm_AP = [0] * len(test_indexes)
+    svm_PR = []
+    svm_RC = []
+    k = 0
+
+    for i in test_indexes:
+        img = img_read(folder, i)
+        motion_img = read_motion_image(folder, i, BG_img)
+        bboxes = read_bboxes(folder, i)
+
+        detections = detect_vehicles(img, motion_img, svm2, marginY, marginX)
+        detections = non_max_suppression(detections, 0.01)
+        index = 0
+        for j in detections:
+            img = cv2.rectangle(img,(j[2],j[0]),(j[3],j[1]),(0,255,0),1)
+            cv2.putText(img, str(index), (int(j[2]),int(j[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
+            index += 1
+        filename = "detection{:0>5d}.png".format(k)
+        cv2.imwrite(filename, img)
+        
+        svm_AP[k], svm_PR, svm_RC = compute_detection_AP(detections, bboxes)
+        
+
+        print "svm_AP[" + str(k) + "]:"
+        print svm_AP[k]
+        print "svm_pr"
+        print svm_PR
+        print "svm_rc"
+        print svm_rc
+
+        k += 1

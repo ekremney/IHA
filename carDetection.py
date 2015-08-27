@@ -2,10 +2,10 @@ from utils.arrayops import array_in_range
 from utils.imageops import img_read, read_motion_image, read_bboxes, add_bbox_margin, img_crop, rand_bbox, overlaps, detect_vehicles, non_max_suppression, compute_detection_AP
 from random import sample
 from libsvm.svmutil import svm_train, svm_predict
-from engine.parts import train, test, bootstrap, compute_BG_Image, train_svm
+from engine.parts import train, test, bootstrap, compute_BG_Image, train_svm, sw_search
 import cv2, time, argparse, sys
 #from db.db import push_train_features, retrieve_train_features
-from db.mdb import push_train_features, retrieve_train_features, push_new_job, retrieve_old_job, list_last_jobs, push_bootstrap_features, retrieve_bootstrap_features
+from db.mdb import push_train_features, retrieve_train_features, push_new_job, retrieve_old_job, list_last_jobs, push_bootstrap_features, retrieve_bootstrap_features, finish_job
 from utils.interface import find_old_job
 
 #########################################################
@@ -89,14 +89,14 @@ if args['mode'] == 'train':
 
     svm = train_svm(trf, trl)
 
-    trf, trl, trfc = bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm)
+    trf, trl = bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm)
     push_bootstrap_features(job['job_id'], trf, trl)
 
     svm2 = train_svm(trf, trl)
 
 
 ###################################################################
-# If bootstrap mode is selecte:
+# If bootstrap mode is selected:
 #   - Lists last x jobs for user to choose which one to load
 #   - Retrieves selected training features of selected job
 #   - Start bootstrapping
@@ -118,20 +118,27 @@ elif args['mode'] == 'bootstrap':
     trfc = len(trl)
 
     details = 'Fork of ' + old_job_id
-    new_job = push_new_job(method, BG_img, details)
+    job = push_new_job(method, BG_img, details)
 
-    push_train_features(new_job['job_id'], trf, trl)
+    push_train_features(job['job_id'], trf, trl)
 
-    print new_job['job_id'] + ' job is created at ' + new_job['timestamp'] + ' as a fork of ' + old_job_id 
-    print 'Used feature extraction method: ' + new_job['method']
+    print job['job_id'] + ' job is created at ' + job['timestamp'] + ' as a fork of ' + old_job_id 
+    print 'Used feature extraction method: ' + job['method']
 
     svm = train_svm(trf, trl)
 
     trf, trl = bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm)
-    push_bootstrap_features(new_job['job_id'], trf, trl)
+    push_bootstrap_features(job['job_id'], trf, trl)
 
     svm2 = train_svm(trf, trl)
 
+
+############################################################################
+# If sliding window search is selected:
+#   - Lists last x jobs for user to choose which one to load
+#   - Retrieves selected training features of selected job (after bootstrap)
+#   - Starts sliding window search
+############################################################################
 else:
     old_job = find_old_job()
     # Copying old job's data into a new job
@@ -148,48 +155,23 @@ else:
     trfc = len(trl)
 
     details = 'Fork of ' + old_job_id
-    new_job = push_new_job(method, BG_img, details)
+    job = push_new_job(method, BG_img, details)
 
-    push_train_features(new_job['job_id'], trf, trl)
+    push_train_features(job['job_id'], trf, trl)
 
-    print new_job['job_id'] + ' job is created at ' + new_job['timestamp'] + ' as a fork of ' + old_job_id 
-    print 'Used feature extraction method: ' + new_job['method']
+    print job['job_id'] + ' job is created at ' + job['timestamp'] + ' as a fork of ' + old_job_id 
+    print 'Used feature extraction method: ' + job['method']
 
     trf, trl = retrieve_bootstrap_features(old_job_id)
-    push_bootstrap_features(new_job['job_id'], trf, trl)
+    push_bootstrap_features(job['job_id'], trf, trl)
 
     svm2 = train_svm(trf, trl)
 
-#time.sleep(100000000)
-
-
 print "Perform sliding windows search"
+sw_search(test_indexes, BG_img, params, svm2)
+print "done!"
 
-# Sliding windows search
-svm_AP = [0] * len(test_indexes)
-svm_PR = []
-svm_RC = []
-k = 0
+finish_job(job['job_id'])
 
-for i in test_indexes:
-    img = img_read(folder, i)
-    motion_img = read_motion_image(folder, i, BG_img)
-    bboxes = read_bboxes(folder, i)
 
-    detections = detect_vehicles(img, motion_img, svm2, marginY, marginX)
-    detections = non_max_suppression(detections, 0.01)
-    index = 0
-    for j in detections:
-        img = cv2.rectangle(img,(j[2],j[0]),(j[3],j[1]),(0,255,0),1)
-        cv2.putText(img, str(index), (int(j[2]),int(j[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
-        index += 1
-    filename = "detection{:0>5d}.png".format(k)
-    cv2.imwrite(filename, img)
-    
-    svm_AP[k], svm_PR, svm_RC = compute_detection_AP(detections, bboxes)
-    
 
-    print "svm_AP[" + str(k) + "]:"
-    print svm_AP[k]
-
-    k += 1

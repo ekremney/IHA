@@ -13,6 +13,7 @@ def push_new_job(method, BG_img, details):
 		'method': method,
 		'BG_img': bson.binary.Binary(pickle.dumps(BG_img, protocol=2)),
 		'details': details,
+		'finished': False,
 		'timestamp': timestamp
 		})
 	result = {
@@ -28,8 +29,13 @@ def retrieve_old_job(job_id):
 	job['BG_img'] = pickle.loads(job['BG_img'])
 	return job
 
+def finish_job(job_id):
+	result = db.jobs.update_one({'_id': ObjectId(job_id)}, {'$set': {'finished': True}})
+	print (result.matched_count == 1)
+
+
 def list_last_jobs(count=5):
-	jobs = db.jobs.find().sort([('_id',-1)])
+	jobs = db.jobs.find({'finished': True}).sort([('_id',-1)])
 	index = 1
 	result = []
 	for job in jobs:
@@ -104,4 +110,5 @@ def retrieve_bootstrap_features(job_id):
 	for i in result:
 		trf.append(i[1])
 		trl.append(i[2])
-	return trf, trl	
+	return trf, trl
+
