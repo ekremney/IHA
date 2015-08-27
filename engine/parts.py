@@ -1,9 +1,10 @@
-from utils.imageops import median, img_read, read_motion_image, read_bboxes, add_bbox_margin, overlaps, rand_bbox, detect_vehicles
+from utils.imageops import median, img_read, read_motion_image, read_bboxes, add_bbox_margin, overlaps, rand_bbox, detect_vehicles, non_max_suppression, compute_detection_AP
 from random import sample
 from utils.feature_extractor import extract
 from tqdm import *
 from libsvm.svmutil import svm_train, svm_predict
 import numpy as np
+import cv2
 
 def compute_BG_Image(folder, train_indexes):
     print "Computing background image"
@@ -201,7 +202,7 @@ def sw_search(test_indexes, BG_img, params, svm):
         motion_img = read_motion_image(folder, i, BG_img)
         bboxes = read_bboxes(folder, i)
 
-        detections = detect_vehicles(img, motion_img, svm2, marginY, marginX)
+        detections = detect_vehicles(img, motion_img, svm, marginY, marginX)
         detections = non_max_suppression(detections, 0.01)
         index = 0
         for j in detections:
@@ -219,6 +220,6 @@ def sw_search(test_indexes, BG_img, params, svm):
         print "svm_pr"
         print svm_PR
         print "svm_rc"
-        print svm_rc
+        print svm_RC
 
         k += 1
