@@ -4,6 +4,7 @@ from db.mdb import list_last_jobs
 def find_old_job():
 	# Interface for user to select an old job to fork
     last_jobs = list_last_jobs()
+    print len(last_jobs)
     if len(last_jobs) == 0:
         print "There's no previous job. Start over using 'train' mode."
         sys.exit(1)

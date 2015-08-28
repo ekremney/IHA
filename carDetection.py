@@ -11,7 +11,7 @@ from utils.interface import find_old_job
 #########################################################
 # CONSTANTS
 #########################################################
-DEFAULT_FEAT_EXT = 's_hog'
+DEFAULT_FEAT_EXT = 'a_hog'
 DEFAULT_MODE = 'search'
 
 #########################################################
@@ -23,9 +23,9 @@ ap.add_argument('-m', '--mode', help='Mode of the program. Use "train", "bootstr
 ap.add_argument('-t', '--method', help='Method for feature extraction. Use "s_hog", "a_hog", or "lbt"')
 args = vars(ap.parse_args())
 
-possible_feats = ['s_hog', 'a_hog', 'lbt']
+possible_feats = ['s_hog', 'a_hog', 'lbp']
 possible_mods = ['train', 'bootstrap', 'search']
- 
+
 # if the mode argument is None, then we are using default mode
 # if specified method is not supported, program halts
 # otherwise, we are using specified method
@@ -62,9 +62,9 @@ marginY = 5
 
 params = {
     'folder'    : 'trnVideo',
-    'marginX'   : 5,
-    'marginY'   : 5,
-    'neg_weight': 1,
+    'marginX'   : 0,
+    'marginY'   : 0,
+    'neg_weight': 2,
     'method'    : method
 }
 
@@ -82,7 +82,7 @@ if args['mode'] == 'train':
 
     job = push_new_job(method, BG_img, details)
     print job['job_id'] + ' job is created at ' + job['timestamp']
-    print 'Used feature extraction method: ' + job['method']
+    print 'Feature extraction method used: ' + job['method']
 
     trf, trl, trfc = train(train_indexes, BG_img, params)
     push_train_features(job['job_id'], trf, trl)
@@ -123,7 +123,7 @@ elif args['mode'] == 'bootstrap':
     push_train_features(job['job_id'], trf, trl)
 
     print job['job_id'] + ' job is created at ' + job['timestamp'] + ' as a fork of ' + old_job_id 
-    print 'Used feature extraction method: ' + job['method']
+    print 'Feature extraction method used: ' + job['method']
 
     svm = train_svm(trf, trl)
 
@@ -160,18 +160,21 @@ else:
     push_train_features(job['job_id'], trf, trl)
 
     print job['job_id'] + ' job is created at ' + job['timestamp'] + ' as a fork of ' + old_job_id 
-    print 'Used feature extraction method: ' + job['method']
+    print 'Feature extraction method used: ' + job['method']
 
     trf, trl = retrieve_bootstrap_features(old_job_id)
     push_bootstrap_features(job['job_id'], trf, trl)
 
     svm2 = train_svm(trf, trl)
 
-print "Perform sliding windows search"
-sw_search(test_indexes, BG_img, params, svm2)
-print "done!"
 
+#svm_AP, svm_PR, svm_RC = 
+sw_search(test_indexes, BG_img, params, svm2)
 finish_job(job['job_id'])
 
-
+print "\nVideo analyze is done! Here are the results: \n"
+"""
+for ap in svm_AP:
+    print ap
+"""
 

@@ -1,7 +1,6 @@
 import cv2, csv
 import numpy as np
 import time
-from hog.hog_features import hog
 from random import sample, randint
 from libsvm.svmutil import svm_predict
 from feature_extractor import extract
@@ -49,7 +48,6 @@ def read_bboxes(folder, index):
 def read_motion_image(folder, index, bg_img=False):
 	motion_threshold = 15
 	if bg_img is False:
-		print "ccc"
 		# frame difference
 		img0 = img_read(folder, index-1)
 		img = img_read(folder, index)
@@ -159,13 +157,13 @@ def detect_vehicles(img, motion_img, svm, marginY, marginX):
 
 	# Sliding window search
 
-	#d1 = sliding_window_search(img, motion_img, svm, 45, 115, jump, 0.9)
-	#d1 = sliding_window_search(img, motion_img, svm, 40, 55, jump, 0.7)
-	d2 = sliding_window_search(img, motion_img, svm, 30, 40, jump, 0.55)
+	#d1 = sliding_window_search(img, motion_img, svm, 45, 115, jump, 0.8)
+	#d1 = sliding_window_search(img, motion_img, svm, 40, 55, jump, 0.85)
+	d1 = sliding_window_search(img, motion_img, svm, 30, 45, jump, 0.95)
 	
 	height, width = img.shape
-	#d1 = add_bbox_margin(d1, -marginY, -marginX, height, width)
-	d2 = add_bbox_margin(d2, -marginY, -marginX, height, width)
+	d1 = add_bbox_margin(d1, -marginY, -marginX, height, width)
+	#d2 = add_bbox_margin(d2, -marginY, -marginX, height, width)
 	#d3 = add_bbox_margin(d3, -marginY, -marginX, height, width)
 	#d4 = add_bbox_margin(d4, -marginY, marginX, height, width)
 
@@ -176,7 +174,7 @@ def detect_vehicles(img, motion_img, svm, marginY, marginX):
 	#for i in d3:
 	#	d1.append(i)
 
-	return d2
+	return d1
 
 #  Felzenszwalb et al.
 def non_max_suppression(boxes, overlapThresh):

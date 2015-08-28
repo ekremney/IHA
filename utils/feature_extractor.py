@@ -3,6 +3,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import data, color, exposure
+from scipy.stats import itemfreq
+from skimage.feature import local_binary_pattern
 
 def a_hog(img):
 	bin_n = 16
@@ -22,6 +24,14 @@ def s_hog(image, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(3, 3),
 	fd = scikit_hog(image, orientations, pixels_per_cell, cells_per_block, visualise, normalise)
 	return fd
 
+def lbp(image):
+	radius = 3 
+	no_points = 8 * radius
+	lbp_vals = local_binary_pattern(image, no_points, radius, method='uniform')
+	x = itemfreq(lbp_vals.ravel())
+	hist = x[:, 1]/sum(x[:, 1])
+	return hist
+
 def extract(img, motion_img, method='a_hog'):
 	result = []
 	resized_img = cv2.resize(img, (5, 5)) 
@@ -36,6 +46,9 @@ def extract(img, motion_img, method='a_hog'):
 	if method == 'a_hog':
 		img_hog = a_hog(img)
 		motion_img_hog = a_hog(motion_img)
+	if method == 'lbp':
+		img_hog = lbp(img)
+		motion_img_hog = lbp(img)
 
 	for i in img_hog:
 		result.append(i)
@@ -56,8 +69,9 @@ def extract(img, motion_img, method='a_hog'):
 	result.append(cols)
 	return result
 
-#img = cv2.imread('../mi.png', 0)
-#fd = s_hog(img)
+#img = cv2.imread('../mi1.png', 0)
+#fd = lbp(img)
+
 #fd = extract(img, img)
 #hog = cv2.HOGDescriptor()
 #print hog.compute.__doc__

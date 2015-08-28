@@ -75,7 +75,7 @@ def train(train_indexes, BG_img, params):
         img_cut = img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         train_feature_count += 1
-        train_features.append(extract(img_cut, motion_img_cut))
+        train_features.append(extract(img_cut, motion_img_cut, method))
         train_labels.append(-1)
     print "Negative training features are extracted."
 
@@ -132,7 +132,7 @@ def test(test_indexes, BG_img, params):
         img_cut = img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         test_feature_count += 1
-        test_features.append(extract(img_cut, motion_img_cut))
+        test_features.append(extract(img_cut, motion_img_cut, method))
         test_labels.append(-1)
     
     print "Negative test features are extracted."
@@ -172,7 +172,7 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
             img_cut = img[j[0]:j[1], j[2]:j[3]]
             motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             train_feature_count += 1
-            train_features.append(extract(img_cut, motion_img_cut))
+            train_features.append(extract(img_cut, motion_img_cut, method))
             train_labels.append(-1)
     
     print "Bootstrap finished."
@@ -186,6 +186,8 @@ def train_svm(train_features, train_labels, arguments='-s 0 -t 0 -b 1'):
     return svm
 
 def sw_search(test_indexes, BG_img, params, svm):
+    print "Performing sliding windows search"
+
     folder = params["folder"]
     marginX = params["marginX"]
     marginY = params["marginY"]
@@ -197,29 +199,29 @@ def sw_search(test_indexes, BG_img, params, svm):
     svm_RC = []
     k = 0
 
-    for i in test_indexes:
-        img = img_read(folder, i)
-        motion_img = read_motion_image(folder, i, BG_img)
-        bboxes = read_bboxes(folder, i)
+    for i in tqdm(range(len(test_indexes))):
+        img = img_read(folder, test_indexes[i])
+        motion_img = read_motion_image(folder, test_indexes[i], BG_img)
+        bboxes = read_bboxes(folder, test_indexes[i])
 
         detections = detect_vehicles(img, motion_img, svm, marginY, marginX)
         detections = non_max_suppression(detections, 0.01)
-        index = 0
+        #index = 0
         for j in detections:
             img = cv2.rectangle(img,(j[2],j[0]),(j[3],j[1]),(0,255,0),1)
-            cv2.putText(img, str(index), (int(j[2]),int(j[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
-            index += 1
+            #cv2.putText(img, str(index), (int(j[2]),int(j[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
+            #index += 1
         filename = "detection{:0>5d}.png".format(k)
         cv2.imwrite(filename, img)
         
-        svm_AP[k], svm_PR, svm_RC = compute_detection_AP(detections, bboxes)
-        
-
-        print "svm_AP[" + str(k) + "]:"
-        print svm_AP[k]
-        print "svm_pr"
-        print svm_PR
-        print "svm_rc"
-        print svm_RC
+        #svm_AP[k], pr, rc = compute_detection_AP(detections, bboxes)
 
         k += 1
+
+        #svm_PR.append(pr)
+        #svm_RC.append(rc)
+
+    print "Sliding windows search is done!"
+
+#    return svm_AP, svm_PR, svm_RC
+
