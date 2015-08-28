@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from skimage import data, color, exposure
 from scipy.stats import itemfreq
 from skimage.feature import local_binary_pattern
+import skimage
 
 def a_hog(img):
 	bin_n = 16
@@ -22,7 +23,9 @@ def a_hog(img):
 
 def s_hog(image, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(3, 3), visualise=False, normalise=False):
 	fd = scikit_hog(image, orientations, pixels_per_cell, cells_per_block, visualise, normalise)
-	return fd
+	x = itemfreq(fd.ravel())
+	hist = x[:, 1]/sum(x[:, 1])
+	return hist
 
 def lbp(image):
 	radius = 3 
@@ -69,8 +72,11 @@ def extract(img, motion_img, method='a_hog'):
 	result.append(cols)
 	return result
 
+
+#print skimage.__file__
 #img = cv2.imread('../mi1.png', 0)
-#fd = lbp(img)
+#fd = scikit_hog(img) #lbp(img)
+#print len(fd[0])
 
 #fd = extract(img, img)
 #hog = cv2.HOGDescriptor()

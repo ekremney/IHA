@@ -205,6 +205,9 @@ def sw_search(test_indexes, BG_img, params, svm):
         bboxes = read_bboxes(folder, test_indexes[i])
 
         detections = detect_vehicles(img, motion_img, svm, marginY, marginX)
+        #for i in detections:
+        #    print i
+        #time.sleep(1000000)
         detections = non_max_suppression(detections, 0.01)
         #index = 0
         for j in detections:

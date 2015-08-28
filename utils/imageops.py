@@ -157,9 +157,9 @@ def detect_vehicles(img, motion_img, svm, marginY, marginX):
 
 	# Sliding window search
 
-	#d1 = sliding_window_search(img, motion_img, svm, 45, 115, jump, 0.8)
-	#d1 = sliding_window_search(img, motion_img, svm, 40, 55, jump, 0.85)
-	d1 = sliding_window_search(img, motion_img, svm, 30, 45, jump, 0.95)
+	#d1 = sliding_window_search(img, motion_img, svm, 45, 115, jump, 0.999)
+	#d2 = sliding_window_search(img, motion_img, svm, 40, 55, jump, 0.999)
+	d1 = sliding_window_search(img, motion_img, svm, 30, 45, jump, 0.998)
 	
 	height, width = img.shape
 	d1 = add_bbox_margin(d1, -marginY, -marginX, height, width)

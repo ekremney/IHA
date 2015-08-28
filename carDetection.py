@@ -53,7 +53,7 @@ else:
 # VARIABLES
 ###############################################
 train_indexes = array_in_range(3, 3, 90)
-bootstrap_indexes = array_in_range(4, 3, 90)
+bootstrap_indexes = array_in_range(3, 20, 90)
 test_indexes = array_in_range(116, 1, 150)
 
 folder = 'trnVideo'
@@ -62,9 +62,9 @@ marginY = 5
 
 params = {
     'folder'    : 'trnVideo',
-    'marginX'   : 0,
-    'marginY'   : 0,
-    'neg_weight': 2,
+    'marginX'   : 5,
+    'marginY'   : 5,
+    'neg_weight': 1,
     'method'    : method
 }
 
