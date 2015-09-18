@@ -75,7 +75,6 @@ def train(train_indexes, BG_img, params):
         img_cut = img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         train_feature_count += 1
-        midX, midY = (neg_bb[3]+neg_bb[2])/2, (neg_bb[1]+neg_bb[0])/2 
         train_features.append(extract(img_cut, motion_img_cut, method))
         train_labels.append(-1)
     print "Negative training features are extracted."
@@ -106,7 +105,6 @@ def test(test_indexes, BG_img, params):
             img_cut = img[j[0]:j[1], j[2]:j[3]]
             motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             test_feature_count += 1
-            midX, midY = (j[3]+j[2])/2, (j[1]+j[0])/2 
             test_features.append(extract(img_cut, motion_img_cut, method))
             test_labels.append(1)
 
@@ -134,7 +132,6 @@ def test(test_indexes, BG_img, params):
         img_cut = img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         test_feature_count += 1
-        midX, midY = (neg_bb[3]+neg_bb[2])/2, (neg_bb[1]+neg_bb[0])/2 
         test_features.append(extract(img_cut, motion_img_cut, method))
         test_labels.append(-1)
     
@@ -175,7 +172,6 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
             img_cut = img[j[0]:j[1], j[2]:j[3]]
             motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             train_feature_count += 1
-            midX, midY = (j[3]+j[2])/2, (j[1]+j[0])/2 
             train_features.append(extract(img_cut, motion_img_cut, method))
             train_labels.append(-1)
     
