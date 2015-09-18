@@ -4,6 +4,7 @@ import time
 from random import sample, randint
 from libsvm.svmutil import svm_predict
 from feature_extractor import extract
+from experiments.pr_area import plotpra
 
 def median(mlist):
 	mlist.sort()
@@ -30,11 +31,15 @@ def abs_mat(bg_img, img):
 
 def img_read(folder, index):
 	filename = folder + "/img{:0>5d}.png".format(index)
+	#filename = folder + "/" + str(index) + ".png"
+	
 	return cv2.imread(filename, 0)
 
 def read_bboxes(folder, index):
 	result = []
 	annot_filename = folder + "/img{:0>5d}.annot".format(index)
+	#annot_filename = folder + "/" + str(index) + ".annot"
+
 	with open(annot_filename, 'rb') as csvfile:
 		reader = csv.reader(csvfile, delimiter=',')
 		i = 0
@@ -100,7 +105,7 @@ def rand_bbox(bboxes, row, col):
 	return neg_bb
 
 def overlaps(neg_bb, bboxes, th=0.5):
-	does_overlap = 0
+	does_overlap = -1
 	index = 0
 	for i in bboxes:
 		top = max(i[0], neg_bb[0])
@@ -125,12 +130,6 @@ def overlaps(neg_bb, bboxes, th=0.5):
 
 	return does_overlap
 
-def listisize(_list):
-	res = []
-	for i in _list:
-		res.append([i])
-	return res
-
 
 def sliding_window_search(img, motion_img, svm, sbox_height, sbox_width, slide=10, threshold=0.2):
 	detections = []
@@ -146,8 +145,9 @@ def sliding_window_search(img, motion_img, svm, sbox_height, sbox_width, slide=1
 			y.append(0)
 			x = []
 			x.append(img_feat)
-			plabel, acc, pr = svm_predict(y, x, svm, '-b 1')
+			plabel, acc, pr = svm_predict(y, x, svm)
 			if pr[0][0] > threshold:
+				#print "pr: " + str(pr[0][0])
 				detections.append([i, i+sbox_height-1, j, j+sbox_width-1, pr[0][0]])
 	return detections
 
@@ -157,9 +157,9 @@ def detect_vehicles(img, motion_img, svm, marginY, marginX):
 
 	# Sliding window search
 
-	#d1 = sliding_window_search(img, motion_img, svm, 45, 115, jump, 0.999)
-	#d2 = sliding_window_search(img, motion_img, svm, 40, 55, jump, 0.999)
-	d1 = sliding_window_search(img, motion_img, svm, 30, 45, jump, 0.998)
+	#d1 = sliding_window_search(img, motion_img, svm, 45, 115, jump, 1)
+	#d2 = sliding_window_search(img, motion_img, svm, 40, 55, jump, 1)
+	d1 = sliding_window_search(img, motion_img, svm, 30, 50, jump, 0.8)
 	
 	height, width = img.shape
 	d1 = add_bbox_margin(d1, -marginY, -marginX, height, width)
@@ -184,6 +184,23 @@ def non_max_suppression(boxes, overlapThresh):
 
 	# initialize the list of picked indexes
 	pick = []
+	"""
+	precision = []
+	areas = []
+	boxes.sort(key=lambda x: -x[4])
+	for i in boxes:
+		area = (i[1]-i[0])*(i[3]-i[2])
+		precision.append(i[4])
+		areas.append(area)
+	plotpra(precision, areas)
+
+	#time.sleep(10000000)
+	
+
+	for i in boxes:
+		area = (i[1]-i[0])*(i[3]-i[2])
+		i[4] = i[4] / float(area)
+	"""
 
 	# grab the coordinates of the bounding boxes
 	x1, x2, y1, y2, resemblance, areas = [], [], [], [], [], []
@@ -247,73 +264,28 @@ def non_max_suppression(boxes, overlapThresh):
 	return res
 
 def compute_detection_AP(detections, bboxes, th=0.4):
+	# sort detections
 	npos = len(bboxes)
 	tp = [0] * len(detections)
+	bb_used = [0] * len(bboxes)
 	for i in range(len(detections)):
 		k = overlaps(detections[i], bboxes, th)
-		if k != 0:
+		if k != -1 and bb_used[k]==0: # TODO: update
 			tp[i] = 1
+			bb_used[k] = 1;
 			#del bboxes[k]
-
 	pr = [0] * npos
 	rc = [0] * npos
 	j = 0
+	detected_num = sum(tp)
 	for i in range(len(tp)):
 		if tp[i] == 1:
-			pr[j] = float(sum(tp[:i]))/(i+1)
+			pr[j] = float(sum(tp[:i+1]))/(i+1)
 			rc[j] = float(j+1)/float(npos)
 			j += 1
-	ap = np.mean(pr)
-	return ap, pr, rc
-'''
-	for i in range(len(rc)):
-		if rc[i] == 0:
-			del pr[i] = []
-			rc[i] = []
-'''
+	[pr.append(0) for i in range(npos-detected_num)]
+	[rc.append(rc[j-1]) for i in range(npos-detected_num)]
 	
-
-
-'''
-function [ap pr rc]=computeDetectionAP(detections,gt, th)
-% computes average precision for detections
-% gt : ground truth
-
-pr = zeros(npos,1);
-rc = zeros(npos,1);
-j=0;
-for i=1:length(tp)
-    if (tp(i)==1)
-        j=j+1;
-        pr(j)=sum(tp(1:i))/i;
-        rc(j)=j/double(npos);
-    end
-end
-
-ap=mean(pr);
-
-pr(rc==0) = [];
-rc(rc==0) = [];
-
-
-
-
-detections = sortrows(detections,-5); % detection probability'e gore descending order'da detectionlari sirala
-% non max suppression
-i=1;
-while (i<=size(detections,1))
-    j=i+1;
-    while (j<=size(detections,1))
-        if ( overlaps(detections(i,:),detections(j,:),th) ~= 0)
-            detections(j,:)=[]; % remove jth detection
-        else
-            j=j+1;
-        end        
-    end
-    i=i+1;
-end
-
-end
-
-'''
-
+	ap = np.mean(pr)
+	
+	return ap, pr, rc

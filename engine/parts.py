@@ -67,7 +67,7 @@ def train(train_indexes, BG_img, params):
 
         neg_bb = rand_bbox(bboxes, height, width);
 
-        if overlaps(neg_bb, bboxes) != 0:
+        if overlaps(neg_bb, bboxes) != -1:
             continue
 
         motion_img = read_motion_image(folder, i, BG_img)
@@ -124,7 +124,7 @@ def test(test_indexes, BG_img, params):
 
         neg_bb = rand_bbox(bboxes, height, width);
 
-        if overlaps(neg_bb, bboxes) != 0:
+        if overlaps(neg_bb, bboxes) != -1:
             continue
 
         motion_img = read_motion_image(folder, i, BG_img)
@@ -162,7 +162,7 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
 
         hard_negatives = []
         for j in detections:
-            if overlaps(j, bboxes) == 0:
+            if overlaps(j, bboxes) == -1:
                 hard_negatives.append(j)
 
         height, width = img.shape
@@ -179,14 +179,14 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
 
     return train_features, train_labels
 
-def train_svm(train_features, train_labels, arguments='-s 0 -t 0 -b 1'):
+def train_svm(train_features, train_labels, arguments='-s 0 -t 0'): # -c param 10-4, 10+4
     print "SVM is being trained"
     svm =  svm_train(train_labels, train_features, arguments)
     print "SVM is trained"
     return svm
 
 def sw_search(test_indexes, BG_img, params, svm):
-    print "Performing sliding windows search"
+    print "Performing sliding window search"
 
     folder = params["folder"]
     marginX = params["marginX"]
@@ -212,19 +212,19 @@ def sw_search(test_indexes, BG_img, params, svm):
         #index = 0
         for j in detections:
             img = cv2.rectangle(img,(j[2],j[0]),(j[3],j[1]),(0,255,0),1)
-            #cv2.putText(img, str(index), (int(j[2]),int(j[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
-            #index += 1
+        #    cv2.putText(img, str(index), (int(j[2]),int(j[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
+
         filename = "detection{:0>5d}.png".format(k)
         cv2.imwrite(filename, img)
         
-        #svm_AP[k], pr, rc = compute_detection_AP(detections, bboxes)
+        svm_AP[k], pr, rc = compute_detection_AP(detections, bboxes)
 
         k += 1
 
-        #svm_PR.append(pr)
-        #svm_RC.append(rc)
+        svm_PR.append(pr)
+        svm_RC.append(rc)
 
-    print "Sliding windows search is done!"
+    print "Sliding window search is done!"
 
-#    return svm_AP, svm_PR, svm_RC
+    return svm_AP, svm_PR, svm_RC
 

@@ -42,6 +42,10 @@ def extract(img, motion_img, method='a_hog'):
 	img_norm = np.linalg.norm(img)
 	motion_img_norm = np.linalg.norm(motion_img)
 	rows, cols = img.shape
+	area = rows*cols
+
+	#motion_img = motion_img / float(motion_img_norm);
+	#img = img / float(img_norm);
 
 	if method == 's_hog':
 		img_hog = s_hog(img)
@@ -52,6 +56,9 @@ def extract(img, motion_img, method='a_hog'):
 	if method == 'lbp':
 		img_hog = lbp(img)
 		motion_img_hog = lbp(img)
+	if method == 'hybrid':
+		img_hog = lbp(img)
+		motion_img_hog = lbp(motion_img)
 
 	for i in img_hog:
 		result.append(i)
@@ -70,6 +77,7 @@ def extract(img, motion_img, method='a_hog'):
 	result.append(motion_img_norm)
 	result.append(rows)
 	result.append(cols)
+	result.append(area)
 	return result
 
 

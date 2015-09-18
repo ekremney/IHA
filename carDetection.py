@@ -7,67 +7,29 @@ import cv2, time, argparse, sys
 #from db.db import push_train_features, retrieve_train_features
 from db.mdb import push_train_features, retrieve_train_features, push_new_job, retrieve_old_job, list_last_jobs, push_bootstrap_features, retrieve_bootstrap_features, finish_job
 from utils.interface import find_old_job
+import numpy as np
 
-#########################################################
-# CONSTANTS
-#########################################################
-DEFAULT_FEAT_EXT = 'a_hog'
-DEFAULT_MODE = 'search'
+# Reads configuration values from config.ini file
+cfg = ConfigParser()
+cfg.read('config.ini')
 
-#########################################################
-# command line arguments: 
-# construct the argument parser and parse the arguments
-#########################################################
-ap = argparse.ArgumentParser(description='Car detection')
-ap.add_argument('-m', '--mode', help='Mode of the program. Use "train", "bootstrap", "search"')
-ap.add_argument('-t', '--method', help='Method for feature extraction. Use "s_hog", "a_hog", or "lbt"')
-args = vars(ap.parse_args())
+method = cfg.get('configs', 'method')
+mode = cfg.get('configs', 'mode')
 
-possible_feats = ['s_hog', 'a_hog', 'lbp']
-possible_mods = ['train', 'bootstrap', 'search']
-
-# if the mode argument is None, then we are using default mode
-# if specified method is not supported, program halts
-# otherwise, we are using specified method
-if args['mode'] is None:
-    mode = DEFAULT_MODE
-elif args['mode'] not in possible_mods:
-    print 'Specified mode "' + args['mode'] + '" is not supported. Exiting...'
-    sys.exit('')
-else:
-    mode = args['mode']
-
-# if the method argument is None, then we are using default method
-# if specified method is not supported, program halts
-# otherwise, use specified method as preferred feature extraction method
-if args['method'] is None:
-    method = DEFAULT_FEAT_EXT
-elif args['method'] not in possible_feats:
-    print 'Specified method "' + args['method'] + '" is not supported. Exiting...'
-    sys.exit(2)
-else:
-    method = args['method']
-
-
-###############################################
-# VARIABLES
-###############################################
-train_indexes = array_in_range(3, 3, 90)
-bootstrap_indexes = array_in_range(3, 20, 90)
-test_indexes = array_in_range(116, 1, 150)
-
-folder = 'trnVideo'
-marginX = 5
-marginY = 5
+train_indexes = range(cfg.getint('train_indexes', 'start'), cfg.getint('train_indexes', 'end'), cfg.getint('train_indexes', 'step'))
+bootstrap_indexes = range(cfg.getint('bootstrap_indexes', 'start'), cfg.getint('bootstrap_indexes', 'end'), cfg.getint('bootstrap_indexes', 'step'))
+test_indexes = range(cfg.getint('test_indexes', 'start'), cfg.getint('test_indexes', 'end'), cfg.getint('test_indexes', 'step'))
 
 params = {
-    'folder'    : 'trnVideo',
-    'marginX'   : 5,
-    'marginY'   : 5,
-    'neg_weight': 1,
+    'folder'    : cfg.get('params', 'folder'),
+    'marginX'   : cfg.getint('params', 'marginX'),
+    'marginY'   : cfg.getint('params', 'marginY'),
+    'neg_weight': cfg.getint('params', 'neg_weight'),
     'method'    : method
 }
 
+c_iteration = cfg.getboolean('svm', 'c_iteration')
+def_c_value = cfg.getfloat('svm', 'def_c_value')
 
 #################################################################
 # If train mode is selected:
@@ -75,10 +37,10 @@ params = {
 #   - Starts a new job
 #   - Starts training positive and negative features
 #################################################################
-if args['mode'] == 'train':
+if mode == 'train':
     details = raw_input("Please enter details about new job: ")
 
-    BG_img = compute_BG_Image(folder, train_indexes)
+    BG_img = compute_BG_Image(params['folder'], train_indexes)
 
     job = push_new_job(method, BG_img, details)
     print job['job_id'] + ' job is created at ' + job['timestamp']
@@ -87,13 +49,12 @@ if args['mode'] == 'train':
     trf, trl, trfc = train(train_indexes, BG_img, params)
     push_train_features(job['job_id'], trf, trl)
 
-    svm = train_svm(trf, trl)
+    svm = train_svm(trf, trl,' -s 0 -t 0 -c 100')
 
     trf, trl = bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm)
     push_bootstrap_features(job['job_id'], trf, trl)
 
-    svm2 = train_svm(trf, trl)
-
+    svm2 = train_svm(trf, trl, '-s 0 -t 0 -c 100')
 
 ###################################################################
 # If bootstrap mode is selected:
@@ -101,7 +62,7 @@ if args['mode'] == 'train':
 #   - Retrieves selected training features of selected job
 #   - Start bootstrapping
 ###################################################################
-elif args['mode'] == 'bootstrap':
+elif mode == 'bootstrap':
     old_job = find_old_job()
 
     # Copying old job's data into a new job
@@ -131,7 +92,6 @@ elif args['mode'] == 'bootstrap':
     push_bootstrap_features(job['job_id'], trf, trl)
 
     svm2 = train_svm(trf, trl)
-
 
 ############################################################################
 # If sliding window search is selected:
@@ -162,19 +122,21 @@ else:
     print job['job_id'] + ' job is created at ' + job['timestamp'] + ' as a fork of ' + old_job_id 
     print 'Feature extraction method used: ' + job['method']
 
-    trf, trl = retrieve_bootstrap_features(old_job_id)
-    push_bootstrap_features(job['job_id'], trf, trl)
+    #trf, trl = retrieve_bootstrap_features(old_job_id)
+    #push_bootstrap_features(job['job_id'], trf, trl)
 
-    svm2 = train_svm(trf, trl)
+    svm2 = train_svm(trf, trl,' -s 0 -t 0 -c 10')
 
-
-#svm_AP, svm_PR, svm_RC = 
-sw_search(test_indexes, BG_img, params, svm2)
+svm_AP, svm_PR, svm_RC = sw_search(test_indexes, BG_img, params, svm2)
 finish_job(job['job_id'])
 
 print "\nVideo analyze is done! Here are the results: \n"
-"""
-for ap in svm_AP:
-    print ap
-"""
+
+
+for ap, index in zip(svm_AP, range(len(svm_AP))):
+    print str(index) + "- " + str(ap)
+
+ap_mean = np.mean(svm_AP)
+print ap_mean
+
 
