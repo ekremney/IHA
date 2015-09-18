@@ -13,7 +13,6 @@ def a_hog(img):
 	gx = cv2.Sobel(img, cv2.CV_32F, 1, 0)
 	gy = cv2.Sobel(img, cv2.CV_32F, 0, 1)
 	mag, ang = cv2.cartToPolar(gx, gy)
-	#print len(ang)
 	bins = np.int32(bin_n*ang/(2*np.pi))    # quantizing binvalues in (0...16)
 	bin_cells = bins[:10,:10], bins[10:,:10], bins[:10,10:], bins[10:,10:]
 	mag_cells = mag[:10,:10], mag[10:,:10], mag[:10,10:], mag[10:,10:]
@@ -23,19 +22,46 @@ def a_hog(img):
 
 def s_hog(image, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(3, 3), visualise=False, normalise=False):
 	fd = scikit_hog(image, orientations, pixels_per_cell, cells_per_block, visualise, normalise)
-	x = itemfreq(fd.ravel())
-	hist = x[:, 1]/sum(x[:, 1])
+	#x = itemfreq(fd.ravel())
+	#hist = x[:, 1]/sum(x[:, 1])
+	fd = fd.ravel()
+
+	hist, bin_edges = np.histogram(fd, bins = np.linspace(0, 1, 100))
 	return hist
 
 def lbp(image):
 	radius = 3 
 	no_points = 8 * radius
-	lbp_vals = local_binary_pattern(image, no_points, radius, method='uniform')
-	x = itemfreq(lbp_vals.ravel())
-	hist = x[:, 1]/sum(x[:, 1])
+
+	"""
+	method : {'default', 'ror', 'uniform', 'var'}
+        Method to determine the pattern.
+        * 'default': original local binary pattern which is gray scale but not
+            rotation invariant.
+        * 'ror': extension of default implementation which is gray scale and
+            rotation invariant.
+        * 'uniform': improved rotation invariance with uniform patterns and
+            finer quantization of the angular space which is gray scale and
+            rotation invariant.
+        * 'nri_uniform': non rotation-invariant uniform patterns variant
+            which is only gray scale invariant [2]_.
+        * 'var': rotation invariant variance measures of the contrast of local
+            image texture which is rotation but not gray scale invariant.
+	"""
+
+	lbp_vals = local_binary_pattern(image, no_points, radius, method='default')
+	d = lbp_vals.ravel()
+	hist, bin_edges = np.histogram(d, bins = np.linspace(0, 25, 26))
 	return hist
 
-def extract(img, motion_img, method='a_hog'):
+def test(img):
+	hogParams = {'winStride': (8, 8), 'padding': (32, 32), 'scale': 1.05}
+	hog = cv2.HOGDescriptor()
+	hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+	result = hog.detectMultiScale(img, **hogParams)
+	return result
+
+def extract(img, motion_img, method):
 	result = []
 	resized_img = cv2.resize(img, (5, 5)) 
 	resized_motion_img = cv2.resize(motion_img, (5, 5))
@@ -82,7 +108,27 @@ def extract(img, motion_img, method='a_hog'):
 
 
 #print skimage.__file__
-#img = cv2.imread('../mi1.png', 0)
+"""
+img = cv2.imread('asd.png', 0)
+d = s_hog(img)
+print d
+"""
+"""
+print max(d)
+print min(d)
+hist, bin_edges = np.histogram(d, bins = np.linspace(-0.0002, 0.001, 100))
+print hist
+
+
+
+d = d.ravel()
+print len(d)
+hist, bin_edges = np.histogram(d, bins = range(27))
+print hist
+print bin_edges
+for i,j in zip(bin_edges, hist):
+	print str(i) + "- " + str(j)
+"""
 #fd = scikit_hog(img) #lbp(img)
 #print len(fd[0])
 
