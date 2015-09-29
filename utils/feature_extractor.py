@@ -22,10 +22,7 @@ def a_hog(img):
 
 def s_hog(image, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(3, 3), visualise=False, normalise=False):
 	fd = scikit_hog(image, orientations, pixels_per_cell, cells_per_block, visualise, normalise)
-	#x = itemfreq(fd.ravel())
-	#hist = x[:, 1]/sum(x[:, 1])
 	fd = fd.ravel()
-
 	hist, bin_edges = np.histogram(fd, bins = np.linspace(0, 1, 100))
 	return hist
 
@@ -61,49 +58,39 @@ def test(img):
 	result = hog.detectMultiScale(img, **hogParams)
 	return result
 
-def extract(img, motion_img, method):
+def extract(img, motion_img, method, feature='all'):
 	result = []
-	resized_img = cv2.resize(img, (5, 5)) 
-	resized_motion_img = cv2.resize(motion_img, (5, 5))
-	img_norm = np.linalg.norm(img)
-	motion_img_norm = np.linalg.norm(motion_img)
+	
+	if feature == 'img' or feature == 'all':
+		resized_img = cv2.resize(img, (5, 5)) 
+		img_norm = np.linalg.norm(img)
+
+	if feature == 'motion' or feature == 'all':
+		resized_motion_img = cv2.resize(motion_img, (5, 5))
+		motion_img_norm = np.linalg.norm(motion_img)
+
 	rows, cols = img.shape
 	area = rows*cols
 
 	#motion_img = motion_img / float(motion_img_norm);
 	#img = img / float(img_norm);
 
-	if method == 's_hog':
-		img_hog = s_hog(img)
-		motion_img_hog = s_hog(motion_img)
-	if method == 'a_hog':
-		img_hog = a_hog(img)
-		motion_img_hog = a_hog(motion_img)
-	if method == 'lbp':
-		img_hog = lbp(img)
-		motion_img_hog = lbp(img)
-	if method == 'hybrid':
-		img_hog = lbp(img)
-		motion_img_hog = lbp(motion_img)
+	
+	if feature == 'img' or feature == 'all':
+		img_hog = globals()[method](img)
+		[result.append(i) for i in img_hog]
+		[result.append(i) for row in resized_img for i in row]
+		result.append(img_norm)
+	if feature == 'motion' or feature == 'all':
+		motion_img_hog = globals()[method](motion_img)
+		[result.append(i) for i in motion_img_hog]
+		[result.append(i) for row in resized_motion_img for i in row]
+		result.append(motion_img_norm)
 
-	for i in img_hog:
-		result.append(i)
-
-	for i in motion_img_hog:
-		result.append(i)
-
-	for i in range(5):
-		for j in range(5):
-			result.append(resized_img[i, j])
-
-	for i in range(5):
-		for j in range(5):
-			result.append(resized_motion_img[i, j])
-	result.append(img_norm)
-	result.append(motion_img_norm)
 	result.append(rows)
 	result.append(cols)
 	result.append(area)
+	
 	return result
 
 
@@ -140,7 +127,6 @@ for i,j in zip(bin_edges, hist):
 #print "fd:"
 #print len(fd)
 
-
 '''
 for i in fd:
 	print i
@@ -158,4 +144,5 @@ ax2.axis('off')
 ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
 ax2.set_title('Histogram of Oriented Gradients')
 plt.show()
+
 '''

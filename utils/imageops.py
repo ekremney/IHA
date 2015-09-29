@@ -4,7 +4,7 @@ import time
 from random import sample, randint
 from libsvm.svmutil import svm_predict
 from feature_extractor import extract
-from experiments.pr_area import plotpra
+#from experiments.pr_area import plotpra
 
 def median(mlist):
 	mlist.sort()
@@ -131,7 +131,7 @@ def overlaps(neg_bb, bboxes, th=0.5):
 	return does_overlap
 
 
-def sliding_window_search(img, motion_img, svm, method, sbox_height, sbox_width, slide=10, threshold=0.2):
+def sliding_window_search(img, motion_img, svm, method, feature, sbox_height, sbox_width, slide=10, threshold=0.2):
 	detections = []
 	det_count = 0
 	height, width = img.shape
@@ -140,7 +140,7 @@ def sliding_window_search(img, motion_img, svm, method, sbox_height, sbox_width,
 		for j in range(1, (width - sbox_width), slide):
 			img_patch = img[i:i+sbox_height-1, j:j+sbox_width-1]
 			motion_patch = motion_img[i:i+sbox_height-1, j:j+sbox_width-1]
-			img_feat = extract(img_patch, motion_patch, method)
+			img_feat = extract(img_patch, motion_patch, method, feature)
 			y = []
 			y.append(0)
 			x = []
@@ -152,15 +152,20 @@ def sliding_window_search(img, motion_img, svm, method, sbox_height, sbox_width,
 	return detections
 
 
-def detect_vehicles(img, motion_img, svm, marginY, marginX, method):
+def detect_vehicles(img, motion_img, svm, params):
+	marginX = params["marginX"]
+	marginY = params["marginY"]
+	method = params["method"]
+	feature = params["feature"]
+
 	jump = 10
 
-	# Sliding window search
+    # Sliding window search
 
 	#d1 = sliding_window_search(img, motion_img, svm, 45, 115, jump, 1)
 	#d2 = sliding_window_search(img, motion_img, svm, 40, 55, jump, 1)
-	d1 = sliding_window_search(img, motion_img, svm, method, 30, 50, jump, 0.8)
-	
+	d1 = sliding_window_search(img, motion_img, svm, method, feature, 40, 30, jump, 0.8)
+
 	height, width = img.shape
 	d1 = add_bbox_margin(d1, -marginY, -marginX, height, width)
 	#d2 = add_bbox_margin(d2, -marginY, -marginX, height, width)

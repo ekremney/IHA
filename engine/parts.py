@@ -31,6 +31,7 @@ def train(train_indexes, BG_img, params):
     marginY = params["marginY"]
     neg_weight = params["neg_weight"]
     method = params["method"]
+    feature = params["feature"]
 
     train_feature_count = 0
     train_features, train_labels = [], []
@@ -48,7 +49,7 @@ def train(train_indexes, BG_img, params):
             img_cut = img[j[0]:j[1], j[2]:j[3]]
             motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             train_feature_count += 1
-            train_features.append(extract(img_cut, motion_img_cut, method))
+            train_features.append(extract(img_cut, motion_img_cut, method, feature))
             train_labels.append(1)
 
     print "Positive training features are extracted."
@@ -75,7 +76,7 @@ def train(train_indexes, BG_img, params):
         img_cut = img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         train_feature_count += 1
-        train_features.append(extract(img_cut, motion_img_cut, method))
+        train_features.append(extract(img_cut, motion_img_cut, method, feature))
         train_labels.append(-1)
     print "Negative training features are extracted."
 
@@ -87,6 +88,7 @@ def test(test_indexes, BG_img, params):
     marginY = params["marginY"]
     neg_weight = params["neg_weight"]
     method = params["method"]
+    feature = params["feature"]
 
     test_features, test_labels = [], []
     test_feature_count = 0
@@ -105,7 +107,7 @@ def test(test_indexes, BG_img, params):
             img_cut = img[j[0]:j[1], j[2]:j[3]]
             motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             test_feature_count += 1
-            test_features.append(extract(img_cut, motion_img_cut, method))
+            test_features.append(extract(img_cut, motion_img_cut, method, feature))
             test_labels.append(1)
 
     pos_test_feature_count = test_feature_count
@@ -132,7 +134,7 @@ def test(test_indexes, BG_img, params):
         img_cut = img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         test_feature_count += 1
-        test_features.append(extract(img_cut, motion_img_cut, method))
+        test_features.append(extract(img_cut, motion_img_cut, method, feature))
         test_labels.append(-1)
     
     print "Negative test features are extracted."
@@ -145,6 +147,7 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
     marginY = params["marginY"]
     neg_weight = params["neg_weight"]
     method = params["method"]
+    feature = params["feature"]
 
     train_features = trf
     train_labels = trl
@@ -158,7 +161,7 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
         motion_img = read_motion_image(folder, bootstrap_indexes[i], BG_img)
         bboxes = read_bboxes(folder, bootstrap_indexes[i])
 
-        detections = detect_vehicles(img, motion_img, svm, marginY, marginX, method)
+        detections = detect_vehicles(img, motion_img, svm, params)
 
         hard_negatives = []
         for j in detections:
@@ -172,7 +175,7 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
             img_cut = img[j[0]:j[1], j[2]:j[3]]
             motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             train_feature_count += 1
-            train_features.append(extract(img_cut, motion_img_cut, method))
+            train_features.append(extract(img_cut, motion_img_cut, method, feature))
             train_labels.append(-1)
     
     print "Bootstrap finished."
@@ -187,12 +190,7 @@ def train_svm(train_features, train_labels, arguments='-s 0 -t 0'): # -c param 1
 
 def sw_search(test_indexes, BG_img, params, svm):
     print "Performing sliding window search"
-
     folder = params["folder"]
-    marginX = params["marginX"]
-    marginY = params["marginY"]
-    neg_weight = params["neg_weight"]
-    method = params["method"]
 
     svm_AP = [0] * len(test_indexes)
     svm_PR = []
@@ -204,11 +202,9 @@ def sw_search(test_indexes, BG_img, params, svm):
         motion_img = read_motion_image(folder, test_indexes[i], BG_img)
         bboxes = read_bboxes(folder, test_indexes[i])
 
-        detections = detect_vehicles(img, motion_img, svm, marginY, marginX, method)
-        #for i in detections:
-        #    print i
-        #time.sleep(1000000)
+        detections = detect_vehicles(img, motion_img, svm, params)
         detections = non_max_suppression(detections, 0.01)
+
         #index = 0
         for j in detections:
             img = cv2.rectangle(img,(j[2],j[0]),(j[3],j[1]),(0,255,0),1)

@@ -1,0 +1,123 @@
+Method used: s_hog
+-------------------------------------
+Method used: s_hog
+-------------------------------------
+precision for c value 0.0001 is: 0.655967436322
+precision for c value 0.001 is: 0.656770028717
+precision for c value 0.01 is: 0.673571229641
+precision for c value 0.1 is: 0.635389489328
+precision for c value 1.0 is: 0.701149451277
+precision for c value 10.0 is: 0.637795647588
+precision for c value 100.0 is: 0.673770790227
+precision for c value 1000.0 is: 0.737297049171
+precision for c value 10000.0 is: 0.691997927572
+*************************************
+
+
+method: s_hog, c value: 0.0001, feature: img, precision: 0.142682614701
+method: s_hog, c value: 0.0001, feature: motion, precision: 0.613413116252
+
+*************************************
+
+method: s_hog, c value: 0.0001, feature: img, precision: 0.135151313701
+method: s_hog, c value: 0.0001, feature: motion, precision: 0.64425714458
+method: s_hog, c value: 0.0001, feature: all, precision: 0.698764421863
+method: s_hog, c value: 0.001, feature: img, precision: 0.159855288746
+method: s_hog, c value: 0.001, feature: motion, precision: 0.637305377769
+method: s_hog, c value: 0.001, feature: all, precision: 0.6381560933
+method: s_hog, c value: 0.01, feature: img, precision: 0.163639429753
+method: s_hog, c value: 0.01, feature: motion, precision: 0.612728973869
+method: s_hog, c value: 0.01, feature: all, precision: 0.595814673529
+method: s_hog, c value: 0.1, feature: img, precision: 0.180578431738
+method: s_hog, c value: 0.1, feature: motion, precision: 0.585687113925
+method: s_hog, c value: 0.1, feature: all, precision: 0.727737330871
+method: s_hog, c value: 1.0, feature: img, precision: 0.276987113874
+method: s_hog, c value: 1.0, feature: motion, precision: 0.584016102391
+method: s_hog, c value: 1.0, feature: all, precision: 0.771735947083
+method: s_hog, c value: 10.0, feature: img, precision: 0.276194265968
+method: s_hog, c value: 10.0, feature: motion, precision: 0.222508867614
+method: s_hog, c value: 10.0, feature: all, precision: 0.68917347707
+method: s_hog, c value: 100.0, feature: img, precision: 0.337326788469
+method: s_hog, c value: 100.0, feature: motion, precision: 0.509586528647
+method: s_hog, c value: 100.0, feature: all, precision: 0.700981946172
+method: s_hog, c value: 1000.0, feature: img, precision: 0.293730495619
+method: s_hog, c value: 1000.0, feature: motion, precision: 0.505211078449
+method: s_hog, c value: 1000.0, feature: all, precision: 0.60794398308
+method: s_hog, c value: 10000.0, feature: img, precision: 0.081906150618
+method: s_hog, c value: 10000.0, feature: motion, precision: 0.502868690797
+method: s_hog, c value: 10000.0, feature: all, precision: 0.665491415452
+method: a_hog, c value: 0.0001, feature: img, precision: 0.290509090087
+method: a_hog, c value: 0.0001, feature: motion, precision: 0.748616039328
+method: a_hog, c value: 0.0001, feature: all, precision: 0.763930761844
+method: a_hog, c value: 0.001, feature: img, precision: 0.362035127676
+method: a_hog, c value: 0.001, feature: motion, precision: 0.748721672364
+method: a_hog, c value: 0.001, feature: all, precision: 0.76139365463
+method: a_hog, c value: 0.01, feature: img, precision: 0.272742324735
+method: a_hog, c value: 0.01, feature: motion, precision: 0.775867085037
+method: a_hog, c value: 0.01, feature: all, precision: 0.781993900336
+method: a_hog, c value: 0.1, feature: img, precision: 0.0992913439562
+method: a_hog, c value: 0.1, feature: motion, precision: 0.740752103803
+method: a_hog, c value: 0.1, feature: all, precision: 0.771093487215
+method: a_hog, c value: 1.0, feature: img, precision: 0.235455911043
+method: a_hog, c value: 1.0, feature: motion, precision: 0.702792272508
+method: a_hog, c value: 1.0, feature: all, precision: 0.708157396162
+method: a_hog, c value: 10.0, feature: img, precision: 0.261270053339
+method: a_hog, c value: 10.0, feature: motion, precision: 0.725224811483
+method: a_hog, c value: 10.0, feature: all, precision: 0.674711697981
+method: a_hog, c value: 100.0, feature: img, precision: 0.227583306673
+method: a_hog, c value: 100.0, feature: motion, precision: 0.78982179834
+method: a_hog, c value: 100.0, feature: all, precision: 0.78353718547
+method: a_hog, c value: 1000.0, feature: img, precision: 0.170987387807
+method: a_hog, c value: 1000.0, feature: motion, precision: 0.731321079591
+method: a_hog, c value: 1000.0, feature: all, precision: 0.755792470333
+method: a_hog, c value: 10000.0, feature: img, precision: 0.153040254996
+method: a_hog, c value: 10000.0, feature: motion, precision: 0.801377891246
+method: a_hog, c value: 10000.0, feature: all, precision: 0.757443997561
+method: lbp, c value: 0.0001, feature: img, precision: 0.178548087198
+method: lbp, c value: 0.0001, feature: motion, precision: 0.663139699276
+method: lbp, c value: 0.0001, feature: all, precision: 0.713604464854
+method: lbp, c value: 0.001, feature: img, precision: 0.153114511037
+method: lbp, c value: 0.001, feature: motion, precision: 0.558412754122
+method: lbp, c value: 0.001, feature: all, precision: 0.656262321639
+method: lbp, c value: 0.01, feature: img, precision: 0.132671533887
+method: lbp, c value: 0.01, feature: motion, precision: 0.644622702058
+method: lbp, c value: 0.01, feature: all, precision: 0.63414826032
+method: lbp, c value: 0.1, feature: img, precision: 0.135878589024
+method: lbp, c value: 0.1, feature: motion, precision: 0.622314741943
+method: lbp, c value: 0.1, feature: all, precision: 0.66882512346
+method: lbp, c value: 1.0, feature: img, precision: 0.237074596266
+method: lbp, c value: 1.0, feature: motion, precision: 0.603237769164
+method: lbp, c value: 1.0, feature: all, precision: 0.641334171044
+method: lbp, c value: 10.0, feature: img, precision: 0.258058127681
+method: lbp, c value: 10.0, feature: motion, precision: 0.742116497067
+method: lbp, c value: 10.0, feature: all, precision: 0.663188059504
+method: lbp, c value: 100.0, feature: img, precision: 0.297756789914
+method: lbp, c value: 100.0, feature: motion, precision: 0.524228680094
+method: lbp, c value: 100.0, feature: all, precision: 0.658578368217
+method: lbp, c value: 1000.0, feature: img, precision: 0.194768298986
+method: lbp, c value: 1000.0, feature: motion, precision: 0.636248322204
+method: lbp, c value: 1000.0, feature: all, precision: 0.729894815779
+method: lbp, c value: 10000.0, feature: img, precision: 0.0911848892342
+method: lbp, c value: 10000.0, feature: motion, precision: 0.402598429446
+method: lbp, c value: 10000.0, feature: all, precision: 0.699569791273
+
+*************************************
+
+method: a_hog, c value: 0.0001, feature: img, precision: 0.113207367962
+method: a_hog, c value: 0.001, feature: img, precision: 0.0756579367977
+method: a_hog, c value: 0.01, feature: img, precision: 0.0606127503302
+method: a_hog, c value: 0.1, feature: img, precision: 0.0567067230783
+method: a_hog, c value: 1.0, feature: img, precision: 0.0179451113905
+method: a_hog, c value: 10.0, feature: img, precision: 0.0621355758642
+method: a_hog, c value: 100.0, feature: img, precision: 0.0471073026623
+method: a_hog, c value: 1000.0, feature: img, precision: 0.0453744410818
+method: a_hog, c value: 10000.0, feature: img, precision: 0.0647666140492
+method: lbp, c value: 0.0001, feature: img, precision: 0.0475268154138
+method: lbp, c value: 0.001, feature: img, precision: 0.0344706692012
+method: lbp, c value: 0.01, feature: img, precision: 0.0327467822681
+method: lbp, c value: 0.1, feature: img, precision: 0.0469576542885
+method: lbp, c value: 1.0, feature: img, precision: 0.0508181768093
+method: lbp, c value: 10.0, feature: img, precision: 0.0853716780366
+method: lbp, c value: 100.0, feature: img, precision: 0.0803778853703
+method: lbp, c value: 1000.0, feature: img, precision: 0.0744133674355
+method: lbp, c value: 10000.0, feature: img, precision: 0.0321055380685
