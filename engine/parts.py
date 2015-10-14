@@ -41,15 +41,16 @@ def train(train_indexes, BG_img, params):
     # Read positive train features
     for i in tqdm(range(len(train_indexes))):
         img = img_read(folder, train_indexes[i])
-        motion_img = read_motion_image(folder, train_indexes[i], BG_img)
+        #motion_img = read_motion_image(folder, train_indexes[i], BG_img)
         height, width = img.shape
         bboxes = add_bbox_margin(read_bboxes(folder, train_indexes[i]), marginX, marginY, height, width)
 
         for j in bboxes:
             img_cut = img[j[0]:j[1], j[2]:j[3]]
-            motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
+            #motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             train_feature_count += 1
-            train_features.append(extract(img_cut, motion_img_cut, method, feature))
+            #train_features.append(extract(img_cut, motion_img_cut, method, feature))
+            train_features.append(extract(img_cut, None, method, feature))
             train_labels.append(1)
 
     print "Positive training features are extracted."
@@ -71,12 +72,13 @@ def train(train_indexes, BG_img, params):
         if overlaps(neg_bb, bboxes) != -1:
             continue
 
-        motion_img = read_motion_image(folder, i, BG_img)
+        #motion_img = read_motion_image(folder, i, BG_img)
 
         img_cut = img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
-        motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
+        #motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         train_feature_count += 1
-        train_features.append(extract(img_cut, motion_img_cut, method, feature))
+        #train_features.append(extract(img_cut, motion_img_cut, method, feature))
+        train_features.append(extract(img_cut, None, method, feature))
         train_labels.append(-1)
     print "Negative training features are extracted."
 
@@ -98,16 +100,17 @@ def test(test_indexes, BG_img, params):
     # Read positive test examples
     for i in tqdm(range(len(test_indexes))):
         img = img_read(folder, test_indexes[i])
-        motion_img = read_motion_image(folder, test_indexes[i], BG_img)
+        #motion_img = read_motion_image(folder, test_indexes[i], BG_img)
 
         height, width = img.shape
         bboxes = add_bbox_margin(read_bboxes(folder, test_indexes[i]), marginX, marginY, height, width)
 
         for j in bboxes:
             img_cut = img[j[0]:j[1], j[2]:j[3]]
-            motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
+            #motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             test_feature_count += 1
-            test_features.append(extract(img_cut, motion_img_cut, method, feature))
+            #test_features.append(extract(img_cut, motion_img_cut, method, feature))
+            test_features.append(extract(img_cut, None, method, feature))
             test_labels.append(1)
 
     pos_test_feature_count = test_feature_count
@@ -129,12 +132,13 @@ def test(test_indexes, BG_img, params):
         if overlaps(neg_bb, bboxes) != -1:
             continue
 
-        motion_img = read_motion_image(folder, i, BG_img)
+        #motion_img = read_motion_image(folder, i, BG_img)
 
         img_cut = img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
-        motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
+        #motion_img_cut = motion_img[neg_bb[0]:neg_bb[1], neg_bb[2]:neg_bb[3]]
         test_feature_count += 1
-        test_features.append(extract(img_cut, motion_img_cut, method, feature))
+        #test_features.append(extract(img_cut, motion_img_cut, method, feature))
+        test_features.append(extract(img_cut, None, method, feature))
         test_labels.append(-1)
     
     print "Negative test features are extracted."
@@ -158,10 +162,11 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
     # Bootstrapping
     for i in tqdm(range(len(bootstrap_indexes))):
         img = img_read(folder, bootstrap_indexes[i])
-        motion_img = read_motion_image(folder, bootstrap_indexes[i], BG_img)
+        #motion_img = read_motion_image(folder, bootstrap_indexes[i], BG_img)
         bboxes = read_bboxes(folder, bootstrap_indexes[i])
 
-        detections = detect_vehicles(img, motion_img, svm, params)
+        #detections = detect_vehicles(img, motion_img, svm, params)
+        detections = detect_vehicles(img, None, svm, params)
 
         hard_negatives = []
         for j in detections:
@@ -173,9 +178,10 @@ def bootstrap(bootstrap_indexes, BG_img, params, trf, trl, trfc, svm):
 
         for j in hard_negatives:
             img_cut = img[j[0]:j[1], j[2]:j[3]]
-            motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
+            #motion_img_cut = motion_img[j[0]:j[1], j[2]:j[3]]
             train_feature_count += 1
-            train_features.append(extract(img_cut, motion_img_cut, method, feature))
+            #train_features.append(extract(img_cut, motion_img_cut, method, feature))
+            train_features.append(extract(img_cut, None, method, feature))
             train_labels.append(-1)
     
     print "Bootstrap finished."
@@ -199,16 +205,17 @@ def sw_search(test_indexes, BG_img, params, svm):
 
     for i in tqdm(range(len(test_indexes))):
         img = img_read(folder, test_indexes[i])
-        motion_img = read_motion_image(folder, test_indexes[i], BG_img)
+        #motion_img = read_motion_image(folder, test_indexes[i], BG_img)
         bboxes = read_bboxes(folder, test_indexes[i])
 
-        detections = detect_vehicles(img, motion_img, svm, params)
+        #detections = detect_vehicles(img, motion_img, svm, params)
+        detections = detect_vehicles(img, None, svm, params)
         detections = non_max_suppression(detections, 0.01)
 
         #index = 0
         for j in detections:
             img = cv2.rectangle(img,(j[2],j[0]),(j[3],j[1]),(0,255,0),1)
-        #    cv2.putText(img, str(index), (int(j[2]),int(j[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
+            cv2.putText(img, str(j[4])[:5], (int(j[2]),int(j[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0,255,255))
 
         filename = "detection{:0>5d}.png".format(k)
         cv2.imwrite(filename, img)

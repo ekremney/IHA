@@ -1,10 +1,9 @@
 import cv2, csv
 import numpy as np
-import time
 from random import sample, randint
 from libsvm.svmutil import svm_predict
 from feature_extractor import extract
-#from experiments.pr_area import plotpra
+from config import Config
 
 def median(mlist):
 	mlist.sort()
@@ -31,7 +30,6 @@ def abs_mat(bg_img, img):
 
 def img_read(folder, index):
 	filename = folder + "/img{:0>5d}.png".format(index)
-	#filename = folder + "/" + str(index) + ".png"
 	
 	return cv2.imread(filename, 0)
 
@@ -76,13 +74,6 @@ def add_bbox_margin(bboxes, marginX, marginY, height, width):
 		row[2] = max(1, row[2] - marginX)
 		row[3] = min(width, row[3] + marginX)
 	return bboxes
-'''
-
-bboxes(:,1) = max(1,bboxes(:,1)-marginy);
-bboxes(:,2) = min(h,bboxes(:,2)+marginy);
-bboxes(:,3) = max(1,bboxes(:,3)-marginx);
-bboxes(:,4) = min(w,bboxes(:,4)+marginx);
-'''
 
 def img_crop(img, y1, y2, x1, x2):
 	img_cut = []
@@ -139,8 +130,9 @@ def sliding_window_search(img, motion_img, svm, method, feature, sbox_height, sb
 	for i in range(1, (height - sbox_height), slide):
 		for j in range(1, (width - sbox_width), slide):
 			img_patch = img[i:i+sbox_height-1, j:j+sbox_width-1]
-			motion_patch = motion_img[i:i+sbox_height-1, j:j+sbox_width-1]
-			img_feat = extract(img_patch, motion_patch, method, feature)
+			#motion_patch = motion_img[i:i+sbox_height-1, j:j+sbox_width-1]
+			#img_feat = extract(img_patch, motion_patch, method, feature)
+			img_feat = extract(img_patch, None, method, feature)
 			y = []
 			y.append(0)
 			x = []
@@ -160,26 +152,20 @@ def detect_vehicles(img, motion_img, svm, params):
 
 	jump = 10
 
-    # Sliding window search
+	cfg = Config()
 
-	#d1 = sliding_window_search(img, motion_img, svm, 45, 115, jump, 1)
-	#d2 = sliding_window_search(img, motion_img, svm, 40, 55, jump, 1)
-	d1 = sliding_window_search(img, motion_img, svm, method, feature, 40, 30, jump, 0.8)
+	# Sliding window search
+	s_windows = cfg.get_sliding_windows()
 
-	height, width = img.shape
-	d1 = add_bbox_margin(d1, -marginY, -marginX, height, width)
-	#d2 = add_bbox_margin(d2, -marginY, -marginX, height, width)
-	#d3 = add_bbox_margin(d3, -marginY, -marginX, height, width)
-	#d4 = add_bbox_margin(d4, -marginY, marginX, height, width)
+	result = []
 
+	for i in s_windows:
+		d = sliding_window_search(img, motion_img, svm, method, feature, i[0], i[1], jump, i[2])
+		height, width = img.shape
+		d = add_bbox_margin(d, -marginY, -marginX, height, width)
+		[result.append(i) for i in d]
 
-	#for i in d2:
-	#	d1.append(i)
-
-	#for i in d3:
-	#	d1.append(i)
-
-	return d1
+	return result
 
 #  Felzenszwalb et al.
 def non_max_suppression(boxes, overlapThresh):
@@ -189,23 +175,6 @@ def non_max_suppression(boxes, overlapThresh):
 
 	# initialize the list of picked indexes
 	pick = []
-	"""
-	precision = []
-	areas = []
-	boxes.sort(key=lambda x: -x[4])
-	for i in boxes:
-		area = (i[1]-i[0])*(i[3]-i[2])
-		precision.append(i[4])
-		areas.append(area)
-	plotpra(precision, areas)
-
-	#time.sleep(10000000)
-	
-
-	for i in boxes:
-		area = (i[1]-i[0])*(i[3]-i[2])
-		i[4] = i[4] / float(area)
-	"""
 
 	# grab the coordinates of the bounding boxes
 	x1, x2, y1, y2, resemblance, areas = [], [], [], [], [], []

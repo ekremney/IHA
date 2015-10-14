@@ -1,33 +1,26 @@
 from engine.parts import train, test, bootstrap, compute_BG_Image, train_svm, sw_search
 import numpy as np
 from math import pow
-from ConfigParser import ConfigParser
+from config import Config
 from utils.iteration_manager import iter_list
 
-# Reads configuration values from config.ini file
-cfg = ConfigParser()
-cfg.read('config.ini')
 
-mode = cfg.get('configs', 'mode')
 
-train_indexes = range(cfg.getint('train_indexes', 'start'), cfg.getint('train_indexes', 'end'),
-                      cfg.getint('train_indexes', 'step'))
-bootstrap_indexes = range(cfg.getint('bootstrap_indexes', 'start'), cfg.getint('bootstrap_indexes', 'end'),
-                          cfg.getint('bootstrap_indexes', 'step'))
-test_indexes = range(cfg.getint('test_indexes', 'start'), cfg.getint('test_indexes', 'end'),
-                     cfg.getint('test_indexes', 'step'))
+cfg = Config()
 
-params = {
-    'folder': cfg.get('params', 'folder'),
-    'marginX': cfg.getint('params', 'marginX'),
-    'marginY': cfg.getint('params', 'marginY'),
-    'neg_weight': cfg.getint('params', 'neg_weight')
-}
+train_indexes = cfg.get_indexes('train')
+bootstrap_indexes = cfg.get_indexes('bootstrap')
+test_indexes = cfg.get_indexes('test')
 
-i_list = iter_list(cfg)
+params = cfg.get_params()
+mode = cfg.get_mode()
+
+i_list = iter_list()
 iter_count = len(i_list)
+
 print str(iter_count) + " iterations to go..."
-index = 0
+
+index = 1
 for i in i_list:
 
     print str(index) + "th iteration of " + str(iter_count) + " iterations."
@@ -39,9 +32,9 @@ for i in i_list:
     params['method'] = method
     params['feature'] = feature
 
-    print "method: " + method + ", c_value: " + c_value
+    print "method: " + method + ", c_value: " + c_value + ", feature: " + feature
 
-    BG_img = compute_BG_Image(params['folder'], train_indexes)
+    BG_img = compute_BG_Image(params['folder'], [1,2,3,4,5,6,7])
 
     trf, trl, trfc = train(train_indexes, BG_img, params)
     svm_param = ' -s 0 -t 0 -c ' + c_value

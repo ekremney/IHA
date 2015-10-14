@@ -46,7 +46,7 @@ def lbp(image):
             image texture which is rotation but not gray scale invariant.
 	"""
 
-	lbp_vals = local_binary_pattern(image, no_points, radius, method='default')
+	lbp_vals = local_binary_pattern(image, no_points, radius, method='uniform')
 	d = lbp_vals.ravel()
 	hist, bin_edges = np.histogram(d, bins = np.linspace(0, 25, 26))
 	return hist

@@ -103,6 +103,7 @@ method: lbp, c value: 10000.0, feature: all, precision: 0.699569791273
 
 *************************************
 
+shutter stock, sliding video th=0.8
 method: a_hog, c value: 0.0001, feature: img, precision: 0.113207367962
 method: a_hog, c value: 0.001, feature: img, precision: 0.0756579367977
 method: a_hog, c value: 0.01, feature: img, precision: 0.0606127503302
@@ -121,3 +122,134 @@ method: lbp, c value: 10.0, feature: img, precision: 0.0853716780366
 method: lbp, c value: 100.0, feature: img, precision: 0.0803778853703
 method: lbp, c value: 1000.0, feature: img, precision: 0.0744133674355
 method: lbp, c value: 10000.0, feature: img, precision: 0.0321055380685
+
+*************************************
+
+shutter stock, sliding video th=0.4
+method: a_hog, c value: 0.0001, feature: img, precision: 0.10467953286
+method: a_hog, c value: 0.001, feature: img, precision: 0.0901904490688
+method: a_hog, c value: 0.01, feature: img, precision: 0.0627059436091
+method: a_hog, c value: 0.1, feature: img, precision: 0.0401291967895
+method: a_hog, c value: 1.0, feature: img, precision: 0.0276169461617
+method: a_hog, c value: 10.0, feature: img, precision: 0.0819892896056
+method: a_hog, c value: 100.0, feature: img, precision: 0.112718108124
+method: a_hog, c value: 1000.0, feature: img, precision: 0.0895661409484
+method: a_hog, c value: 10000.0, feature: img, precision: 0.0238097156906
+method: lbp, c value: 0.0001, feature: img, precision: 0.0586555830292
+method: lbp, c value: 0.001, feature: img, precision: 0.0559098567508
+method: lbp, c value: 0.01, feature: img, precision: 0.0514737002214
+method: lbp, c value: 0.1, feature: img, precision: 0.0502155264367
+method: lbp, c value: 1.0, feature: img, precision: 0.0603087291306
+method: lbp, c value: 10.0, feature: img, precision: 0.0699655630078
+method: lbp, c value: 100.0, feature: img, precision: 0.0824564501137
+method: lbp, c value: 1000.0, feature: img, precision: 0.0572427735011
+method: lbp, c value: 10000.0, feature: img, precision: 0.0520101969426
+method: s_hog, c value: 1.0, feature: all, precision: 0.602144582138
+method: a_hog, c value: 1.0, feature: img, precision: 0.00206024438761
+method: a_hog, c value: 1.0, feature: img, precision: 0.0075
+method: a_hog, c value: 1.0, feature: img, precision: 0.0216965754513
+method: a_hog, c value: 1.0, feature: img, precision: 0.00583333333333
+method: a_hog, c value: 1.0, feature: img, precision: 0.0190966288496
+method: a_hog, c value: 1.0, feature: img, precision: 0.0214015283955
+Method used: a_hog
+-------------------------------------
+method: a_hog, c value: 1.0, feature: img, precision: 0.134444444444
+
+neg_weight=2, threshold=1
+-------------------------
+method: a_hog, c value: 0.0001, feature: img, precision: 0.19
+method: a_hog, c value: 0.001, feature: img, precision: 0.364444444444
+method: a_hog, c value: 0.01, feature: img, precision: 0.220555555556
+method: a_hog, c value: 0.1, feature: img, precision: 0.223888888889
+method: a_hog, c value: 1.0, feature: img, precision: 0.257222222222
+method: a_hog, c value: 10.0, feature: img, precision: 0.215555555556
+method: a_hog, c value: 100.0, feature: img, precision: 0.239444444444
+method: a_hog, c value: 1000.0, feature: img, precision: 0.21
+method: a_hog, c value: 10000.0, feature: img, precision: 0.273888888889
+method: lbp, c value: 0.0001, feature: img, precision: 0.0166666666667
+
+neg_weight=2, threshold=0.5
+---------------------------
+method: a_hog, c value: 0.0001, feature: img, precision: 0.2925
+method: a_hog, c value: 0.001, feature: img, precision: 0.300833333333
+method: a_hog, c value: 0.01, feature: img, precision: 0.300833333333
+method: a_hog, c value: 0.1, feature: img, precision: 0.343333333333
+method: a_hog, c value: 0.0001, feature: img, precision: 0.268333333333
+method: a_hog, c value: 0.001, feature: img, precision: 0.313333333333
+method: a_hog, c value: 0.01, feature: img, precision: 0.293333333333
+method: a_hog, c value: 0.1, feature: img, precision: 0.305
+method: a_hog, c value: 1.0, feature: img, precision: 0.275833333333
+method: a_hog, c value: 10.0, feature: img, precision: 0.338333333333
+method: a_hog, c value: 100.0, feature: img, precision: 0.334166666667
+method: a_hog, c value: 1000.0, feature: img, precision: 0.293333333333
+method: a_hog, c value: 10000.0, feature: img, precision: 0.255833333333
+method: lbp, c value: 0.0001, feature: img, precision: 0.025
+method: lbp, c value: 0.001, feature: img, precision: 0.025
+method: lbp, c value: 0.01, feature: img, precision: 0.1
+method: lbp, c value: 0.1, feature: img, precision: 0.13
+method: lbp, c value: 1.0, feature: img, precision: 0.105
+method: lbp, c value: 10.0, feature: img, precision: 0.538333333333
+method: lbp, c value: 100.0, feature: img, precision: 0.135
+method: lbp, c value: 1000.0, feature: img, precision: 0.105
+method: lbp, c value: 10000.0, feature: img, precision: 0.13
+method: lbp, c value: 10.0, feature: img, precision: 0.105
+
+neg_weight=1, threshold=0.3
+---------------------------
+method: a_hog, c value: 0.0001, feature: img, precision: 0.325833333333
+method: a_hog, c value: 0.001, feature: img, precision: 0.3475
+method: a_hog, c value: 0.01, feature: img, precision: 0.280833333333
+method: a_hog, c value: 0.1, feature: img, precision: 0.293333333333
+method: a_hog, c value: 1.0, feature: img, precision: 0.280833333333
+method: a_hog, c value: 10.0, feature: img, precision: 0.300833333333
+method: a_hog, c value: 100.0, feature: img, precision: 0.303333333333
+method: a_hog, c value: 1000.0, feature: img, precision: 0.293333333333
+method: a_hog, c value: 10000.0, feature: img, precision: 0.318333333333
+method: a_hog, c value: 0.0001, feature: img, precision: 0.280833333333
+method: a_hog, c value: 0.001, feature: img, precision: 0.218333333333
+method: a_hog, c value: 0.01, feature: img, precision: 0.293333333333
+method: a_hog, c value: 0.1, feature: img, precision: 0.300833333333
+method: a_hog, c value: 1.0, feature: img, precision: 0.180833333333
+method: a_hog, c value: 10.0, feature: img, precision: 0.334166666667
+method: a_hog, c value: 100.0, feature: img, precision: 0.398611111111
+method: a_hog, c value: 1000.0, feature: img, precision: 0.255833333333
+method: a_hog, c value: 10000.0, feature: img, precision: 0.268333333333
+method: lbp, c value: 0.0001, feature: img, precision: 0.025
+method: lbp, c value: 0.001, feature: img, precision: 0.05
+method: lbp, c value: 0.01, feature: img, precision: 0.075
+method: lbp, c value: 0.1, feature: img, precision: 0.185
+method: lbp, c value: 1.0, feature: img, precision: 0.18
+method: lbp, c value: 10.0, feature: img, precision: 0.105
+method: lbp, c value: 100.0, feature: img, precision: 0.125
+method: lbp, c value: 1000.0, feature: img, precision: 0.125
+method: lbp, c value: 10000.0, feature: img, precision: 0.19
+method: a_hog, c value: 0.0001, feature: img, precision: 0.442162698413
+method: a_hog, c value: 0.0001, feature: img, precision: 0.118333333333
+method: a_hog, c value: 0.0001, feature: img, precision: 0.296666666667
+method: a_hog, c value: 0.001, feature: img, precision: 0.281666666667
+method: a_hog, c value: 0.0001, feature: img, precision: 0.3975
+method: a_hog, c value: 0.001, feature: img, precision: 0.351666666667
+method: a_hog, c value: 0.01, feature: img, precision: 0.496666666667
+method: a_hog, c value: 0.1, feature: img, precision: 0.246006944444
+method: a_hog, c value: 1.0, feature: img, precision: 0.346666666667
+method: a_hog, c value: 10.0, feature: img, precision: 0.455
+method: a_hog, c value: 0.0001, feature: img, precision: 0.515625
+method: a_hog, c value: 0.0001, feature: img, precision: 0.464228219697
+method: a_hog, c value: 0.001, feature: img, precision: 0.435416666667
+method: a_hog, c value: 0.01, feature: img, precision: 0.502380952381
+method: a_hog, c value: 0.1, feature: img, precision: 0.450694444444
+method: a_hog, c value: 0.0001, feature: img, precision: 0.479166666667
+method: a_hog, c value: 0.001, feature: img, precision: 0.442013888889
+method: a_hog, c value: 0.0001, feature: img, precision: 0.427864583333
+method: a_hog, c value: 0.0001, feature: img, precision: 0.456770833333
+method: a_hog, c value: 0.001, feature: img, precision: 0.475
+method: a_hog, c value: 0.0001, feature: img, precision: 0.401686507937
+method: lbp, c value: 0.0001, feature: img, precision: 0.41875
+method: lbp, c value: 1.0, feature: img, precision: 0.512173012173
+method: lbp, c value: 1.0, feature: img, precision: 0.49513477975
+method: lbp, c value: 1.0, feature: img, precision: 0.522730972731
+method: lbp, c value: 1.0, feature: img, precision: 0.47613960114
+method: lbp, c value: 1.0, feature: img, precision: 0.554487179487
+method: lbp, c value: 1.0, feature: img, precision: 0.390978113541
+method: a_hog, c value: 1.0, feature: img, precision: 0.5092820034
+method: a_hog, c value: 1.0, feature: img, precision: 0.625460617058
